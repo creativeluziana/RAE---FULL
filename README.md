@@ -1,85 +1,102 @@
-# RAE Assistant Chatbot
+# RAE (Research Assistant & Educator) Chatbot 🤖
 
-A modern, feature-rich chatbot built with React and Node.js, leveraging advanced AI capabilities for natural conversations and image generation.
+A powerful AI-powered research assistant that helps users explore academic papers, generate summaries, and facilitate learning through interactive conversations.
 
-## Features
+## ✨ Features
 
-- 🤖 Natural Language Conversation using Google's Gemini API
-- 🎨 Image Generation with Hugging Face API
-- 📄 PDF Analysis and Text Extraction
-- 🗣️ Voice Interaction (Speech-to-Text and Text-to-Speech)
-- 📝 Conversation History Management
-- 🌓 Light/Dark Theme Support
-- 📱 Responsive Design for All Devices
-- 💾 Local Storage for Settings and History
-- 🔍 Conversation Search Functionality
-- ⚙️ Customizable Settings
+- **Intelligent Chat Interface**: Natural language conversations about research topics
+- **Paper Search & Analysis**: Search and analyze research papers from multiple sources:
+  - Semantic Scholar
+  - arXiv
+  - CORE
+- **Paper Summarization**: Get concise summaries of academic papers
+- **Image Generation**: AI-powered image generation for research concepts
+- **PDF Processing**: Extract and analyze content from PDF documents
+- **Multi-Source Integration**: Unified access to multiple research databases
 
-## Tech Stack
+## 🚀 Getting Started
 
-### Frontend
-- React.js
-- FontAwesome Icons
-- Axios for API requests
-- Custom CSS for styling
+### Prerequisites
 
-### Backend
-- Node.js
-- Express.js
-- Multer for file uploads
-- PDF-Parse for document analysis
-- Dotenv for environment variables
-- Node-Fetch for API requests
+- Node.js (v14 or higher)
+- npm or yarn
+- API Keys for:
+  - Gemini API
+  - Hugging Face
+  - CORE API (optional)
 
-### APIs
-- Google Gemini API for intelligent responses
-- Hugging Face API for image generation
-
-## Setup Instructions
+### Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/leothedev0705/Rae-Chatbot.git
-   cd Rae-Chatbot
-   ```
+```bash
+git clone https://github.com/creativeluziana/RAE---FULL.git
+cd RAE---FULL
+```
 
-2. Install dependencies:
-   ```bash
-   # Install backend dependencies
-   cd Backend
-   npm install
+2. Install backend dependencies:
+```bash
+cd backend
+npm install
+```
 
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   ```
+3. Install frontend dependencies:
+```bash
+cd ../frontend
+npm install
+```
 
-3. Create `.env` file in the Backend directory with your API keys:
-   ```
-   GEMINI_API_KEY=your_gemini_api_key
-   HUGGING_FACE_API_KEY=your_huggingface_api_key
-   ```
+4. Create a `.env` file in the backend directory with your API keys:
+```env
+GEMINI_API_KEY=your_gemini_api_key
+HUGGING_FACE_API_KEY=your_huggingface_api_key
+CORE_API_KEY=your_core_api_key
+```
 
-4. Start the servers:
-   ```bash
-   # Start backend server (from Backend directory)
-   npm start
+### Running the Application
 
-   # Start frontend server (from frontend directory)
-   npm start
-   ```
+1. Start the backend server:
+```bash
+cd backend
+npm start
+```
 
-## Usage
+2. Start the frontend development server:
+```bash
+cd frontend
+npm start
+```
 
-1. **Chat Interface**: Type your message in the input field and press Enter or click the send button.
-2. **Image Generation**: Use commands like "generate an image of..." to create AI-generated images.
-3. **PDF Analysis**: Upload PDF files using the file upload button for text extraction and analysis.
-4. **Voice Features**: Click the microphone icon to use voice input or the speaker icon for text-to-speech.
+The application will be available at `http://localhost:3000`
 
-## Contributing
+## 🛠️ Tech Stack
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+- **Frontend**: React.js
+- **Backend**: Node.js, Express
+- **AI Integration**: 
+  - Gemini AI for chat
+  - Hugging Face for image generation
+- **APIs**: 
+  - Semantic Scholar
+  - arXiv
+  - CORE
 
-## License
+## 🔒 Security
 
-[MIT](https://choosealicense.com/licenses/mit/) 
+- API keys are securely managed through environment variables
+- CORS protection enabled
+- Rate limiting implemented for API endpoints
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📧 Contact
+
+For any queries or support, please reach out to the repository owner.
+
+---
+Made with ❤️ by Luziana 
