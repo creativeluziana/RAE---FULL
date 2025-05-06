@@ -1,24 +1,26 @@
 {
-  "name": "backend",
+  "name": "rae-backend",
   "version": "1.0.0",
+  "description": "Backend for RAE Research Assistant",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "canvas": "^3.1.0",
+    "@google/generative-ai": "^0.2.0",
+    "axios": "^1.6.7",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "openai": "^4.85.1",
-    "pdf-parse": "^1.1.1"
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
   },
-  "description": ""
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
 }

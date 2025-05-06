@@ -14,18 +14,19 @@ import {
   faStar as fasStar,
   faVolumeUp,
   faVolumeMute,
-  faSearch,
   faShareAlt,
   faCog
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
-import SearchMessages from './components/SearchMessages';
 import ExportOptions from './components/ExportOptions';
 import LeftSidebar from './components/LeftSidebar';
 import Settings from './components/Settings';
 
 // Hugging Face token for Stable Diffusion 3.5
 const HF_API_TOKEN = localStorage.getItem('rae-hf-api-key');
+
+// Configure axios defaults
+axios.defaults.baseURL = 'http://localhost:5000';
 
 const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
   // Load saved theme from localStorage or default to "light"
@@ -197,7 +198,7 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
         formData.append("image", file);
         formData.append("userId", userId);
 
-        const response = await axios.post("http://localhost:5000/api/chat/image", formData, {
+        const response = await axios.post("/api/chat/image", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         setChatHistory((prev) => [
@@ -270,64 +271,77 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
 
   // The main function that handles "Send"
   const sendUserMessage = async (message) => {
-    console.log("sendUserMessage called with:", message);
-    if (!message.trim()) return;
-
-    // If imageMode is active, interpret message as an image prompt
-    if (imageMode) {
-      await generateImage(message);
-      return;
-    }
-
-    // Otherwise, normal text chat
-    setLoading(true);
-    setChatHistory((prev) => [...prev, { 
-      sender: "user", 
-      message,
-      timestamp: new Date() 
-    }]);
-
     try {
-      const conversationContext = buildConversationContext(message);
-      console.log("Full conversation context:\n", conversationContext);
+      if (!message.trim()) {
+        throw new Error("Please enter a message");
+      }
+
+      setLoading(true);
+      setChatHistory(prev => [...prev, { 
+        sender: "user", 
+        message, 
+        timestamp: new Date() 
+      }]);
 
       let response;
       if (isPdfMode && pdfFile) {
         const formData = new FormData();
         formData.append("pdf", pdfFile);
+        formData.append("message", message);
         formData.append("userId", userId);
-        formData.append("message", conversationContext);
 
-        response = await axios.post("http://localhost:5000/api/chat/pdf", formData, {
+        response = await axios.post("/api/chat/pdf", formData, {
           headers: { "Content-Type": "multipart/form-data" },
+          timeout: 30000 // 30 second timeout
         });
+      } else if (imageMode) {
+        response = await generateImage(message);
       } else {
-        response = await axios.post("http://localhost:5000/api/chat", {
-          userId,
-          message: conversationContext,
+        response = await axios.post("/api/chat", {
+          message,
+          userId
+        }, {
+          timeout: 15000 // 15 second timeout
         });
       }
 
-      console.log("Bot reply raw:", response.data.reply);
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
 
-      setChatHistory((prev) => [...prev, { 
-        sender: "bot", 
+      const botMessage = {
+        sender: "bot",
         message: response.data.reply,
-        timestamp: new Date() 
-      }]);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setChatHistory((prev) => [
-        ...prev,
-        { 
-          sender: "bot", 
-          message: "Sorry, something went wrong.",
-          timestamp: new Date() 
-        },
-      ]);
-    }
+        timestamp: new Date(),
+        image: response.data.imageUrl // for image generation mode
+      };
 
-    setLoading(false);
+      setChatHistory(prev => [...prev, botMessage]);
+      setUserMessage("");
+      
+      // Scroll to bottom after bot reply
+      setTimeout(() => {
+        const chatContainer = document.querySelector(".chat-messages");
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }, 100);
+
+    } catch (error) {
+      console.error("Error in sendUserMessage:", error);
+      
+      // Add error message to chat
+      setChatHistory(prev => [...prev, {
+        sender: "bot",
+        message: `<span class="error-message">Error: ${error.message || "Failed to get response from AI"}. Please try again.</span>`,
+        timestamp: new Date(),
+        isError: true
+      }]);
+      
+    } finally {
+      setLoading(false);
+      setPdfFile(null); // Clear PDF file after processing
+    }
   };
 
   // The "Send" button
@@ -614,7 +628,7 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
             aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
           >
             <FontAwesomeIcon icon={theme === "light" ? faMoon : faSun} />
-            {theme === "light" ? "Dark Mode" : "Light Mode"}
+            {theme === "light" ? "Dark" : "Light"}
           </button>
 
           <div className="pdf-toggle-wrap">
@@ -656,21 +670,6 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
 
       <div className="chat-container">
         <div className="chat-tools">
-          <SearchMessages 
-            chatHistory={chatHistory} 
-            onResultClick={(index) => {
-              // Scroll to the specific message
-              const messageElements = document.querySelectorAll('.user-message, .bot-message');
-              if (messageElements[index]) {
-                messageElements[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Highlight effect
-                messageElements[index].classList.add('highlight-message');
-                setTimeout(() => {
-                  messageElements[index].classList.remove('highlight-message');
-                }, 2000);
-              }
-            }} 
-          />
           <ExportOptions chatHistory={chatHistory} />
         </div>
         
@@ -764,17 +763,7 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
         </div>
 
         {/* Extra actions */}
-        <div
-          className="extra-actions"
-          style={{ 
-            margin: "10px 0", 
-            display: "flex", 
-            gap: "12px", 
-            alignItems: "center",
-            justifyContent: "flex-start" 
-          }}
-        >
-          {/* Local image upload */}
+        <div className="extra-actions" style={{ margin: "10px 0", display: "flex", gap: "12px", alignItems: "center", justifyContent: "flex-start" }}>
           <label htmlFor="image-upload" className="icon-button" title="Upload Image">
             <FontAwesomeIcon icon={faImage} />
           </label>
@@ -786,7 +775,6 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
             style={{ display: "none" }}
           />
 
-          {/* STT toggle */}
           <button 
             className={`icon-button ${sttActive ? 'active-stt' : ''}`} 
             onClick={toggleSTT} 
@@ -796,7 +784,6 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
             {sttActive && <span style={{marginLeft: '5px', fontSize: '0.9em'}}>Listening...</span>}
           </button>
 
-          {/* Image mode toggle */}
           <button 
             className={`icon-button ${imageMode ? 'active-mode' : ''}`} 
             onClick={toggleImageMode} 
@@ -813,9 +800,7 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
             type="text"
             value={userMessage}
             onChange={handleInputChange}
-            placeholder={
-              imageMode ? "Type an image prompt here..." : "Message RAE... (Ctrl+Enter to send)"
-            }
+            placeholder={imageMode ? "Type an image prompt here..." : "Message RAE... (Ctrl+Enter to send)"}
             className="chat-input"
             aria-label="Message input"
           />
@@ -842,14 +827,12 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
 
         {isPdfMode && pdfFile && (
           <div className="pdf-upload-status">
-            <p>
-              Using PDF: <strong>{pdfFile.name}</strong>
-            </p>
+            <p>Using PDF: <strong>{pdfFile.name}</strong></p>
           </div>
         )}
       </div>
-      
-      {/* Keyboard shortcuts modal */}
+
+      {/* Modals */}
       {showShortcuts && (
         <div className="shortcuts-modal">
           <div className="shortcuts-content">
@@ -860,34 +843,11 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
             <div className="shortcuts-body">
               <table>
                 <tbody>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>T</kbd></td>
-                    <td>Toggle dark/light theme</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>P</kbd></td>
-                    <td>Toggle PDF mode</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>I</kbd></td>
-                    <td>Toggle image generation mode</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>M</kbd></td>
-                    <td>Toggle speech-to-text</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Ctrl/Cmd</kbd>+<kbd>Enter</kbd></td>
-                    <td>Send message</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Esc</kbd></td>
-                    <td>Cancel speech recognition</td>
-                  </tr>
-                  <tr>
-                    <td><kbd>Alt</kbd>+<kbd>?</kbd></td>
-                    <td>Show/hide this help</td>
-                  </tr>
+                  <tr><td><kbd>Alt</kbd>+<kbd>P</kbd></td><td>Toggle PDF mode</td></tr>
+                  <tr><td><kbd>Alt</kbd>+<kbd>I</kbd></td><td>Toggle image generation mode</td></tr>
+                  <tr><td><kbd>Alt</kbd>+<kbd>M</kbd></td><td>Toggle speech-to-text</td></tr>
+                  <tr><td><kbd>Ctrl/Cmd</kbd>+<kbd>Enter</kbd></td><td>Send message</td></tr>
+                  <tr><td><kbd>Alt</kbd>+<kbd>?</kbd></td><td>Show/hide this help</td></tr>
                 </tbody>
               </table>
             </div>
@@ -895,31 +855,19 @@ const Chatbot = forwardRef(({ updateChatHistory }, ref) => {
         </div>
       )}
       
-      {/* Clear chat confirmation */}
       {showClearConfirm && (
         <div className="modal-overlay">
           <div className="modal-content confirm-modal">
             <h3>Clear Chat History?</h3>
             <p>This will remove all messages. This action cannot be undone.</p>
             <div className="modal-actions">
-              <button 
-                onClick={() => setShowClearConfirm(false)} 
-                className="cancel-button"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={clearChat} 
-                className="confirm-button"
-              >
-                Clear History
-              </button>
+              <button onClick={() => setShowClearConfirm(false)} className="cancel-button">Cancel</button>
+              <button onClick={clearChat} className="confirm-button">Clear History</button>
             </div>
           </div>
         </div>
       )}
       
-      {/* Settings Modal */}
       {showSettings && (
         <Settings
           theme={theme}

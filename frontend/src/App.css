@@ -35,9 +35,13 @@ body, html {
 
 /* Main App Container */
 .app-container {
-  display: flex;
   flex: 1;
+  display: flex;
   overflow: hidden;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .sidebar-left, .sidebar-right {
@@ -81,7 +85,7 @@ body, html {
   flex: 1;
   min-width: 0; /* Important for preventing overflow */
   padding: 0;
-  margin: 0;
+  margin: 0 345px 0 305px; /* Right sidebar + left sidebar + margins */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -117,7 +121,12 @@ body, html {
   background-color: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-  margin: 20px 0;
+  margin: 20px 25px 20px 0;
+  position: fixed;
+  right: 0;
+  top: 64px; /* Height of navbar */
+  bottom: 0;
+  z-index: 100;
 }
 
 .sidebar-left {
@@ -853,6 +862,19 @@ body, html {
   .main-chat {
     flex: 1;
   }
+
+  .sidebar-right {
+    position: fixed;
+    top: 56px; /* Smaller navbar height on mobile */
+    margin: 0;
+    width: 100%;
+    border-radius: 0;
+    z-index: 1000;
+  }
+
+  .main-chat {
+    margin-right: 0;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1509,6 +1531,7 @@ input:checked + .slider:before {
 
 /* Chat container (the card-like area) */
 .chat-container {
+  height: 900px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -1517,7 +1540,7 @@ input:checked + .slider:before {
 
 /* The scrollable chat box */
 .chat-box {
-  height: 400px; /* fixed height, scrollable */
+  height: 500px; /* fixed height, scrollable */
   overflow-y: auto;
   border: 1px solid #eee;
   border-radius: 8px;
@@ -3138,3 +3161,742 @@ input:checked + .slider:before {
   --input-bg: #222;
   --border-color: #333;
 }
+
+/* Help Panel Styles */
+.help-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: var(--bg-color);
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  border-left: 1px solid var(--border-color);
+}
+
+.dark .help-panel {
+  background: #1e1e1e;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Help Button Container */
+.help-button-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+}
+
+.help-toggle-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.help-toggle-button:hover {
+  transform: scale(1.05);
+  background: var(--primary-hover);
+}
+
+.dark .help-toggle-button {
+  background: #2a2a2a;
+  color: #6b86ff;
+}
+
+.dark .help-toggle-button:hover {
+  background: #323759;
+}
+
+/* Update existing sidebar styles */
+.sidebar-right {
+  width: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  margin: 20px 25px 20px 0;
+  position: fixed;
+  right: 0;
+  top: 64px; /* Height of navbar */
+  bottom: 0;
+  z-index: 100;
+}
+
+.dark .sidebar-right {
+  background-color: #1e1e1e;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Styles */
+@media (max-width: 992px) {
+  .help-panel {
+    width: 100%;
+    transform: translateX(100%);
+  }
+
+  .help-panel.show {
+    transform: translateX(0);
+  }
+
+  .sidebar-right {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .help-button-container {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+/* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .navbar {
+  background-color: #1e1e1e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Update app-layout to account for navbar */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 64px; /* Height of navbar */
+}
+
+.app-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Adjust help button position to account for navbar */
+.help-button-container {
+  position: fixed;
+  top: 84px; /* Navbar height + spacing */
+  right: 20px;
+  z-index: 999;
+}
+
+@media (max-width: 992px) {
+  .navbar {
+    padding: 0.6rem 1rem;
+  }
+  
+  .app-layout {
+    padding-top: 56px; /* Adjusted for smaller navbar height on mobile */
+  }
+  
+  .help-button-container {
+    top: 76px;
+  }
+  
+  .app-container {
+    padding: 0 0.5rem;
+  }
+}
+
+.navbar-brand h1 {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  color: var(--primary-color);
+  letter-spacing: 2px;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background-color: var(--hover-bg);
+  transform: scale(1.05);
+}
+
+.dark .nav-button {
+  color: #aaa;
+}
+
+.dark .nav-button:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .mobile-menu {
+    display: flex;
+  }
+  
+  .navbar-brand h1 {
+    font-size: 1.5rem;
+  }
+  
+  .nav-button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+}
+
+/* Left Sidebar */
+.sidebar-left {
+  width: 280px;
+  position: fixed;
+  left: 0;
+  top: 64px; /* Height of navbar */
+  bottom: 0;
+  background: #ffffff;
+  margin-left: 25px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  padding: 20px 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e6e6e6;
+}
+
+.dark .sidebar-left {
+  background: #1e1e1e;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  border-color: #333;
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 15px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e6e6e6;
+  background: #ffffff;
+  border-radius: 12px;
+  color: #333333;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+  transform: translateX(5px);
+  border-color: #4361ee;
+  color: #4361ee;
+}
+
+.menu-item.active {
+  background: #f5f5f5;
+  color: #4361ee;
+  border-color: #4361ee;
+  font-weight: 500;
+}
+
+.menu-item svg {
+  width: 18px;
+  height: 18px;
+  color: inherit;
+}
+
+.dark .menu-item {
+  background: #1e1e1e;
+  border-color: #333;
+  color: #eee;
+}
+
+.dark .menu-item:hover {
+  background: #2a2a2a;
+  border-color: #6b86ff;
+  color: #6b86ff;
+}
+
+.dark .menu-item.active {
+  background: #2a2a2a;
+  border-color: #6b86ff;
+  color: #6b86ff;
+}
+
+/* Update main content area to account for both sidebars */
+.main-chat {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  margin: 0 345px 0 305px; /* Right sidebar + left sidebar + margins */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+@media (max-width: 992px) {
+  .sidebar-left {
+    position: fixed;
+    top: 56px;
+    margin: 0;
+    width: 100%;
+    border-radius: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-left.show {
+    transform: translateX(0);
+  }
+
+  .main-chat {
+    margin: 0;
+  }
+
+}
+
+/* Ensure the app container accounts for the sidebars */
+.app-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding-top: 20px;
+}
+
+/* Update navbar brand to include menu button */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-brand .nav-button {
+  margin-right: 8px;
+}
+
+/* Component Container Styles */
+.ask-rae-container,
+.saved-papers-container,
+.feedback-container,
+.about-us-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+.ask-rae-container h1,
+.saved-papers-container h1,
+.feedback-container h1,
+.about-us-container h1 {
+  font-size: 2.5rem;
+  color: #4361EE;
+  margin-bottom: 20px;
+}
+
+.dark .ask-rae-container h1,
+.dark .saved-papers-container h1,
+.dark .feedback-container h1,
+.dark .about-us-container h1 {
+  color: #6b86ff;
+}
+
+.ask-rae-container p,
+.saved-papers-container p,
+.feedback-container p,
+.about-us-container p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.dark .ask-rae-container p,
+.dark .saved-papers-container p,
+.dark .feedback-container p,
+.dark .about-us-container p {
+  color: #aaa;
+}
+
+/* Update main-chat to handle different components */
+.main-chat {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  margin: 0 25px 0 305px; /* Left sidebar + margin */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* When Virtual Assistant is active, adjust margins for right sidebar */
+.main-chat.with-right-sidebar {
+  margin-right: 345px; /* Right sidebar + margin */
+}
+
+@media (max-width: 992px) {
+  .ask-rae-container,
+  .saved-papers-container,
+  .feedback-container,
+  .about-us-container {
+    padding: 20px;
+  }
+
+  .main-chat {
+    margin: 0;
+  }
+
+  .main-chat.with-right-sidebar {
+    margin-right: 0;
+  }
+}
+
+/* About Us Page Styles */
+.about-us-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--text-color);
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-color);
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  margin: 20px 25px;
+}
+
+.dark .about-us-container {
+  background: #1e1e1e;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+}
+
+.about-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.about-header h1 {
+  font-size: 3rem;
+  color: #4361EE;
+  margin-bottom: 20px;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.about-header .tagline {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.mission-section {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.mission-section h2 {
+  font-size: 2rem;
+  color: #4361EE;
+  margin-bottom: 20px;
+}
+
+.mission-section p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.features-section {
+  margin-bottom: 60px;
+}
+
+.features-section h2 {
+  font-size: 2rem;
+  color: #4361EE;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.feature-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  color: #4361EE;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.feature-card p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.benefits-section {
+  margin-bottom: 60px;
+}
+
+.benefits-section h2 {
+  font-size: 2rem;
+  color: #4361EE;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-icon {
+  font-size: 2rem;
+  color: #4361EE;
+  flex-shrink: 0;
+}
+
+.benefit-content h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.benefit-content p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.contact-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contact-section h2 {
+  font-size: 2rem;
+  color: #4361EE;
+  margin-bottom: 20px;
+}
+
+.contact-section p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.contact-section a {
+  color: #4361EE;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contact-section a:hover {
+  text-decoration: underline;
+}
+
+.about-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Dark mode styles */
+.dark .about-header h1,
+.dark .mission-section h2,
+.dark .features-section h2,
+.dark .benefits-section h2,
+.dark .contact-section h2 {
+  color: #6b86ff;
+}
+
+.dark .feature-card,
+.dark .benefit-item {
+  background: #2a2a2a;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dark .feature-card:hover {
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .feature-icon,
+.dark .benefit-icon {
+  color: #6b86ff;
+}
+
+.dark .feature-card h3,
+.dark .benefit-content h3 {
+  color: #fff;
+}
+
+.dark .about-header .tagline,
+.dark .feature-card p,
+.dark .benefit-content p,
+.dark .contact-section p {
+  color: #aaa;
+}
+
+.dark .contact-section a {
+  color: #6b86ff;
+}
+
+.dark .about-footer {
+  border-color: #333;
+  color: #888;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .about-us-container {
+    padding: 20px;
+    margin: 10px;
+    height: calc(100vh - 20px);
+  }
+
+  .about-content {
+    padding: 10px;
+  }
+
+  .about-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .benefit-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 4px 0;
+  display: inline-block;
+}
+
+.dark-theme .error-message {
+  background-color: #2c1f21;
+  border-color: #842029;
+}
+
